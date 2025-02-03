@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to trigger GitHub Action
     async function triggerGitHubAction(modName, modGitHub) {
-        const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBackend/dispatches";
+        const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/dispatches";
 
         try {
             const response = await fetch(url, {
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Load Mods from mods.txt
     function loadMods() {
-        fetch(`https://raw.githubusercontent.com/TheVrEnthusiast/HoverMangerBackend/main/mods.txt`)
+        fetch(`https://raw.githubusercontent.com/TheVrEnthusiast/HoverMangerBacklot/main/mods.txt`)
             .then(response => response.text())
             .then(data => {
                 modsContainer.innerHTML = "";
