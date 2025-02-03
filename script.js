@@ -25,34 +25,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to trigger GitHub Action
     async function triggerGitHubAction(modName, modGitHub) {
-        const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/dispatches";
+    const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/actions/workflows/update-mods.yml/dispatches";
 
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/vnd.github.everest-preview+json",
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer TOKEN_PLACEHOLDER` // This will be replaced with the GitHub Action secret
-                },
-                body: JSON.stringify({
-                    event_type: "update-mods",
-                    client_payload: { mod_name: modName, mod_link: modGitHub }
-                })
-            });
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/vnd.github.v3+json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ref: "main",
+                inputs: {
+                    mod_name: modName,
+                    mod_link: modGitHub
+                }
+            })
+        });
 
-            if (response.ok) {
-                alert("Mod uploaded successfully! It may take a moment to appear.");
-                loadMods();
-            } else {
-                const errorText = await response.text();
-                alert("Error: Could not trigger GitHub Action.");
-                console.error("GitHub Action Response:", errorText);
-            }
-        } catch (error) {
-            console.error("Error uploading mod:", error);
+        if (response.ok) {
+            alert("Mod uploaded successfully! It may take a moment to appear.");
+        } else {
+            const errorText = await response.text();
+            alert("Error: Could not trigger GitHub Action.");
+            console.error("GitHub Action Response:", errorText);
         }
+    } catch (error) {
+        console.error("Error uploading mod:", error);
     }
+}
+
 
     // Handle Upload Button Click
     submitButton.addEventListener("click", () => {
