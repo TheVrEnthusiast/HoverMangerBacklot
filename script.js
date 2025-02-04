@@ -7,77 +7,68 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
+    // Show the upload modal when the button is clicked
     uploadButton.addEventListener("click", () => {
         modal.style.display = "block";
     });
 
+    // Close the modal
     closeModal.addEventListener("click", () => {
         modal.style.display = "none";
     });
 
+    // Close modal if clicked outside
     window.addEventListener("click", (event) => {
         if (event.target === modal) {
             modal.style.display = "none";
         }
     });
 
-    async function triggerGitHubAction(modName, modGitHub) {
-        const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/dispatches";
+    // Function to upload mod to the server
+    async function uploadMod(modName, modGitHub) {
+        const response = await fetch('/upload-mod', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mod_name: modName, mod_link: modGitHub }),
+        });
 
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/vnd.github.everest-preview+json",
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer YOUR_GITHUB_PERSONAL_ACCESS_TOKEN` // Replace with a GitHub token stored as a secret
-                },
-                body: JSON.stringify({
-                    event_type: "update-mods",
-                    client_payload: { mod_name: modName, mod_link: modGitHub }
-                })
-            });
-
-            if (response.ok) {
-                alert("Mod uploaded successfully! It may take a moment to appear.");
-                loadMods();
-            } else {
-                const errorText = await response.text();
-                alert("Error: Could not trigger GitHub Action.");
-                console.error("GitHub Action Response:", errorText);
-            }
-        } catch (error) {
-            console.error("Error uploading mod:", error);
+        const data = await response.json();
+        if (response.ok) {
+            alert('Mod uploaded successfully!');
+            loadMods();
+        } else {
+            alert(`Error: ${data.error}`);
         }
     }
 
+    // Submit the mod upload form
     submitButton.addEventListener("click", () => {
         const modName = modNameInput.value.trim();
         const modGitHub = modGitHubInput.value.trim();
-        
+
         if (modName && modGitHub) {
-            triggerGitHubAction(modName, modGitHub);
+            uploadMod(modName, modGitHub);
         } else {
             alert("Please fill in all fields.");
         }
     });
 
-    function loadMods() {
-        fetch(`https://raw.githubusercontent.com/TheVrEnthusiast/HoverMangerBacklot/main/mods.txt`)
-            .then(response => response.text())
-            .then(data => {
-                modsContainer.innerHTML = "";
-                const mods = data.split("\n").filter(line => line.trim() !== "");
-                mods.forEach(modEntry => {
-                    const [modName, modLink] = modEntry.split(" | ");
-                    const modElement = document.createElement("div");
-                    modElement.classList.add("mod-item");
-                    modElement.innerHTML = `<h3>${modName}</h3><a href="${modLink}" target="_blank">GitHub</a>`;
-                    modsContainer.appendChild(modElement);
-                });
-            })
-            .catch(error => console.error("Error loading mods:", error));
+    // Load the list of mods from the server
+    async function loadMods() {
+        const response = await fetch('/mods');
+        const data = await response.json();
+        modsContainer.innerHTML = '';
+
+        data.mods.forEach(mod => {
+            const modElement = document.createElement("div");
+            modElement.classList.add("mod-item");
+            modElement.innerHTML = `<h3>${mod.split(' | ')[0]}</h3><a href="${mod.split(' | ')[1]}" target="_blank">GitHub</a>`;
+            modsContainer.appendChild(modElement);
+        });
     }
 
+    // Load mods on page load
     loadMods();
 });

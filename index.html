@@ -3,32 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HoverManager - Mod Store</title>
+    <title>HoverManager</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>HoverManager</h1>
-        <button id="uploadModButton">Upload Mod</button>
-    </header>
-    
-    <main>
-        <section id="modList">
-            <h2>Available Mods</h2>
-            <div id="modsContainer"></div>
-        </section>
-    </main>
-
+    <h1>HoverManager</h1>
+    <button id="uploadModButton">Upload Mod</button>
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Upload Mod</h2>
-            <input type="text" id="modName" placeholder="Mod Name">
-            <input type="text" id="modGitHub" placeholder="GitHub Repo Link">
+            <input type="text" id="modName" placeholder="Mod Name" />
+            <input type="text" id="modGitHub" placeholder="Mod GitHub Link" />
             <button id="submitMod">Submit</button>
         </div>
     </div>
-
+    <div id="modsContainer"></div>
     <script src="script.js"></script>
 </body>
 </html>
