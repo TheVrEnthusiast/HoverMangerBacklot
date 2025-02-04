@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HoverManager</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hover Junkers Mod Manager</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>HoverManager</h1>
+    <h1>Hover Junkers Mod Manager</h1>
+    
     <button id="uploadModButton">Upload Mod</button>
+
     <div id="uploadModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Upload Mod</h2>
-            <input type="text" id="modName" placeholder="Mod Name" />
-            <input type="text" id="modGitHub" placeholder="Mod GitHub Link" />
+            <h2>Upload a New Mod</h2>
+            <input type="text" id="modName" placeholder="Mod Name">
+            <input type="text" id="modGitHub" placeholder="GitHub Link">
             <button id="submitMod">Submit</button>
         </div>
     </div>
-    <div id="modsContainer"></div>
+
+    <div id="modsContainer">
+        <h2>Uploaded Mods</h2>
+        <div id="modList"></div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

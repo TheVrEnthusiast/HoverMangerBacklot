@@ -7,68 +7,80 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
-    // Show the upload modal when the button is clicked
+    // Open modal when upload button is clicked
     uploadButton.addEventListener("click", () => {
         modal.style.display = "block";
     });
 
-    // Close the modal
+    // Close modal when close button or outside of modal is clicked
     closeModal.addEventListener("click", () => {
         modal.style.display = "none";
     });
 
-    // Close modal if clicked outside
     window.addEventListener("click", (event) => {
         if (event.target === modal) {
             modal.style.display = "none";
         }
     });
 
-    // Function to upload mod to the server
-    async function uploadMod(modName, modGitHub) {
-        const response = await fetch('/upload-mod', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ mod_name: modName, mod_link: modGitHub }),
-        });
+    // Trigger the upload-mod route on the server
+    async function triggerModUpload(modName, modGitHub) {
+        const url = "http://localhost:5000/upload-mod"; // Your server URL
 
-        const data = await response.json();
-        if (response.ok) {
-            alert('Mod uploaded successfully!');
-            loadMods();
-        } else {
-            alert(`Error: ${data.error}`);
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    mod_name: modName,
+                    mod_link: modGitHub
+                })
+            });
+
+            if (response.ok) {
+                alert("Mod uploaded successfully! It may take a moment to appear.");
+                loadMods(); // Refresh the mod list
+            } else {
+                const errorText = await response.text();
+                alert("Error: Could not upload mod.");
+                console.error("Upload Error:", errorText);
+            }
+        } catch (error) {
+            console.error("Error uploading mod:", error);
         }
     }
 
-    // Submit the mod upload form
+    // Handle submit button click
     submitButton.addEventListener("click", () => {
         const modName = modNameInput.value.trim();
         const modGitHub = modGitHubInput.value.trim();
 
         if (modName && modGitHub) {
-            uploadMod(modName, modGitHub);
+            triggerModUpload(modName, modGitHub); // Trigger mod upload
         } else {
             alert("Please fill in all fields.");
         }
     });
 
-    // Load the list of mods from the server
-    async function loadMods() {
-        const response = await fetch('/mods');
-        const data = await response.json();
-        modsContainer.innerHTML = '';
-
-        data.mods.forEach(mod => {
-            const modElement = document.createElement("div");
-            modElement.classList.add("mod-item");
-            modElement.innerHTML = `<h3>${mod.split(' | ')[0]}</h3><a href="${mod.split(' | ')[1]}" target="_blank">GitHub</a>`;
-            modsContainer.appendChild(modElement);
-        });
+    // Load mods from the server and display them
+    function loadMods() {
+        fetch("http://localhost:5000/get-mods") // Get mods from the server
+            .then((response) => response.text())
+            .then((data) => {
+                modsContainer.innerHTML = ""; // Clear the container
+                const mods = data.split("\n").filter((line) => line.trim() !== "");
+                mods.forEach((modEntry) => {
+                    const [modName, modLink] = modEntry.split(" | ");
+                    const modElement = document.createElement("div");
+                    modElement.classList.add("mod-item");
+                    modElement.innerHTML = `<h3>${modName}</h3><a href="${modLink}" target="_blank">GitHub</a>`;
+                    modsContainer.appendChild(modElement);
+                });
+            })
+            .catch((error) => console.error("Error loading mods:", error));
     }
 
-    // Load mods on page load
-    loadMods();
+    loadMods(); // Load mods initially
 });
