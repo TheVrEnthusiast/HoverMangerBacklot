@@ -1,31 +1,33 @@
 name: Update Mods
 
 on:
-  workflow_dispatch:
-    inputs:
-      mod_name:
-        description: 'Mod Name'
-        required: true
-      mod_link:
-        description: 'Mod GitHub Link'
-        required: true
+  repository_dispatch:
+    types: [update-mods]
+
+permissions:
+  contents: write  # Allow writing to the repository
 
 jobs:
-  update-mods:
+  update-mods-file:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Add mod to mods.txt
-        run: echo "${{ github.event.inputs.mod_name }} | ${{ github.event.inputs.mod_link }}" >> mods.txt
-
-      - name: Commit and Push
+      - name: Get input data
         run: |
-          git config --global user.name "GitHub Actions"
+          echo "MOD_NAME=${{ github.event.client_payload.mod_name }}" >> $GITHUB_ENV
+          echo "MOD_LINK=${{ github.event.client_payload.mod_link }}" >> $GITHUB_ENV
+
+      - name: Append mod to mods.txt
+        run: echo "${{ env.MOD_NAME }} | ${{ env.MOD_LINK }}" >> mods.txt
+
+      - name: Commit and push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_FOR_GIT }}  # Uses your GitHub secret
+        run: |
+          git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add mods.txt
-          git commit -m "Added new mod: ${{ github.event.inputs.mod_name }}"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git commit -m "Added mod: ${{ env.MOD_NAME }}"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/TheVrEnthusiast/HoverMangerBacklot.git
