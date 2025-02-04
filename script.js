@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
-    const SERVER_URL = "http://152.42.20.185:5000"; // Use your server's IP
+    const SERVER_URL = "http://0.0.0.0:5000"; // Use your server's IP
 
     // Open modal when upload button is clicked
     uploadButton.addEventListener("click", () => {
