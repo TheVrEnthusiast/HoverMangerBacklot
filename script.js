@@ -7,12 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
-    // Open Upload Mod Menu
     uploadButton.addEventListener("click", () => {
         modal.style.display = "block";
     });
 
-    // Close Upload Mod Menu
     closeModal.addEventListener("click", () => {
         modal.style.display = "none";
     });
@@ -23,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Trigger GitHub Action
     async function triggerGitHubAction(modName, modGitHub) {
         const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/dispatches";
 
@@ -54,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Handle Upload Button Click
     submitButton.addEventListener("click", () => {
         const modName = modNameInput.value.trim();
         const modGitHub = modGitHubInput.value.trim();
@@ -66,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Load Mods from mods.txt
     function loadMods() {
         fetch(`https://raw.githubusercontent.com/TheVrEnthusiast/HoverMangerBacklot/main/mods.txt`)
             .then(response => response.text())
@@ -84,5 +79,5 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error loading mods:", error));
     }
 
-    loadMods(); // Load mods when page loads
+    loadMods();
 });

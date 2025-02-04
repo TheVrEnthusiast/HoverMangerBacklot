@@ -20,7 +20,8 @@ jobs:
           echo "MOD_LINK=${{ github.event.client_payload.mod_link }}" >> $GITHUB_ENV
 
       - name: Append mod to mods.txt
-        run: echo "${{ env.MOD_NAME }} | ${{ env.MOD_LINK }}" >> mods.txt
+        run: |
+          echo "${{ env.MOD_NAME }} | ${{ env.MOD_LINK }}" >> mods.txt
 
       - name: Commit and push changes
         env:
