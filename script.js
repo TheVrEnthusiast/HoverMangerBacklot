@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
+    const SERVER_URL = "http://152.42.20.185:5000"; // Use your server's IP
+
     // Open modal when upload button is clicked
     uploadButton.addEventListener("click", () => {
         modal.classList.add("show"); // Display the modal
@@ -38,10 +40,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to trigger mod upload
     async function triggerModUpload(modName, modGitHub) {
-        const url = "http://localhost:5000/upload-mod"; // Your server URL
-
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${SERVER_URL}/upload-mod`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Load mods from the server and display them
     function loadMods() {
-        fetch("http://localhost:5000/get-mods") // Get mods from the server
+        fetch(`${SERVER_URL}/get-mods`)
             .then((response) => response.text())
             .then((data) => {
                 modsContainer.innerHTML = ""; // Clear the container
