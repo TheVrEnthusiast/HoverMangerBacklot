@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const modGitHubInput = document.getElementById("modGitHub");
     const modsContainer = document.getElementById("modsContainer");
 
+    const GITHUB_OWNER = "TheVrEnthusiast";
+    const GITHUB_REPO = "HoverMangerBacklot";
+    const WORKFLOW_FILE = "update-mods.yml";
+    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+
     // Open Upload Mod Menu
     uploadButton.addEventListener("click", () => {
         modal.style.display = "block";
@@ -25,18 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to trigger GitHub Action
     async function triggerGitHubAction(modName, modGitHub) {
-        const url = "https://api.github.com/repos/TheVrEnthusiast/HoverMangerBacklot/actions/workflows/update-mods.yml/dispatches";
-
         try {
-            const response = await fetch(url, {
+            const response = await fetch(GITHUB_API_URL, {
                 method: "POST",
                 headers: {
-                    "Accept": "application/vnd.github.v3+json",
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer TOKEN_PLACEHOLDER` // GitHub Actions secret (set inside GitHub Actions)
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": `Bearer YOUR_GITHUB_PERSONAL_ACCESS_TOKEN`, // Replace with your token for local testing
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    ref: "main",
+                    ref: "main",  // Branch to run the workflow on
                     inputs: {
                         mod_name: modName,
                         mod_link: modGitHub
@@ -45,14 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (response.ok) {
-                alert("Mod uploaded successfully! It may take a moment to appear.");
+                alert("✅ Mod uploaded successfully! It may take a moment to appear.");
+                loadMods();  // Reload mods list
             } else {
                 const errorText = await response.text();
-                alert("Error: Could not trigger GitHub Action.");
+                alert("❌ Error: Could not trigger GitHub Action.");
                 console.error("GitHub Action Response:", errorText);
             }
         } catch (error) {
-            console.error("Error uploading mod:", error);
+            console.error("❌ Error uploading mod:", error);
         }
     }
 
@@ -64,13 +68,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (modName && modGitHub) {
             triggerGitHubAction(modName, modGitHub);
         } else {
-            alert("Please fill in all fields.");
+            alert("⚠️ Please fill in all fields.");
         }
     });
 
     // Load Mods from mods.txt
     function loadMods() {
-        fetch(`https://raw.githubusercontent.com/TheVrEnthusiast/HoverMangerBacklot/main/mods.txt`)
+        fetch(`https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/mods.txt`)
             .then(response => response.text())
             .then(data => {
                 modsContainer.innerHTML = "";
@@ -83,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     modsContainer.appendChild(modElement);
                 });
             })
-            .catch(error => console.error("Error loading mods:", error));
+            .catch(error => console.error("❌ Error loading mods:", error));
     }
 
     loadMods(); // Load mods when page loads
