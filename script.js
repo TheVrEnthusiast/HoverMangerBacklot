@@ -39,10 +39,17 @@ async function uploadMod() {
 }
 
 // Function to load mods
+// Function to load mods from the Google Apps Script Web App
+// Function to load mods from the Google Apps Script Web App
 async function loadMods() {
     try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzVvtUF5uvxeut6tHLHk6Y88OLZLLGokxXbVxoqhps1oe8MeT05wCg7VR21ts5c0vQAwA/exec");
+        console.log("Fetching mod data...");
+        const response = await fetch("https://script.google.com/macros/s/AKfycbygU3KnE4Ix7pGupmrxqMlFSzpcEYSLxWGiWfdRu2BnpW4gY4IJZ7LjhPqoeBVIOmM0/exec");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
         const mods = await response.json();
+        console.log("Mods loaded:", mods);
 
         if (!Array.isArray(mods)) {
             console.error("Invalid data format:", mods);
@@ -50,16 +57,14 @@ async function loadMods() {
         }
 
         const modList = document.getElementById("modList");
-        modList.innerHTML = ""; // Clear existing mod list
+        modList.innerHTML = ""; // Clear current list
 
         mods.forEach(mod => {
             const modItem = document.createElement("div");
             modItem.classList.add("mod-item");
             modItem.innerHTML = `
                 <h3>${mod.name}</h3>
-                <div class="mod-buttons">
-                    <a href="${mod.link}" target="_blank">Download</a>
-                </div>
+                <a href="${mod.link}" target="_blank">Download</a>
             `;
             modList.appendChild(modItem);
         });
@@ -68,18 +73,63 @@ async function loadMods() {
     }
 }
 
-// Show upload modal
-document.getElementById("uploadModButton").addEventListener("click", function () {
+// Function to handle mod upload (only one definition)
+async function uploadMod() {
+    const modName = document.getElementById("modName").value.trim();
+    const modGitHub = document.getElementById("modGitHub").value.trim();
+
+    if (!modName || !modGitHub) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    const formData = {
+        mod_name: modName,
+        mod_link: modGitHub
+    };
+
+    console.log("Uploading mod...", formData);
+
+    try {
+        // Use your deployed Google Apps Script URL here:
+        const response = await fetch("https://script.google.com/macros/s/AKfycbygU3KnE4Ix7pGupmrxqMlFSzpcEYSLxWGiWfdRu2BnpW4gY4IJZ7LjhPqoeBVIOmM0/exec", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        // Since your doPost returns plain text ("Success"), we use response.text()
+        const result = await response.text();
+        console.log("Upload response:", result);
+
+        if (response.ok && result.trim() === "Success") {
+            alert("Mod uploaded successfully!");
+            loadMods(); // Reload mods list to include the new mod
+            // Clear the input fields
+            document.getElementById("modName").value = "";
+            document.getElementById("modGitHub").value = "";
+            // Hide the modal (assuming you use a CSS class "show" to display it)
+            document.getElementById("uploadModal").classList.remove("show");
+        } else {
+            alert("Failed to upload mod.");
+        }
+    } catch (error) {
+        console.error("Upload error:", error);
+    }
+}
+
+// Modal handling: Show and hide the upload modal
+document.getElementById("uploadModButton").addEventListener("click", () => {
     document.getElementById("uploadModal").classList.add("show");
 });
-
-// Close the upload modal
-document.querySelector(".close").addEventListener("click", function () {
+document.querySelector(".close").addEventListener("click", () => {
     document.getElementById("uploadModal").classList.remove("show");
 });
 
-// Handle form submission for mod upload
+// Bind the upload button click to the uploadMod function
 document.getElementById("submitMod").addEventListener("click", uploadMod);
 
-// Load mods on page load
+// Load mods when the page loads
 window.onload = loadMods;
