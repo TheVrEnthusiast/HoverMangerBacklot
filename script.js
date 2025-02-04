@@ -9,21 +9,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Open modal when upload button is clicked
     uploadButton.addEventListener("click", () => {
-        modal.style.display = "block";
+        modal.classList.add("show"); // Display the modal
     });
 
-    // Close modal when close button or outside of modal is clicked
+    // Close modal when close button is clicked
     closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
+        modal.classList.remove("show"); // Hide the modal
     });
 
+    // Close modal if clicked outside the modal content
     window.addEventListener("click", (event) => {
         if (event.target === modal) {
-            modal.style.display = "none";
+            modal.classList.remove("show");
         }
     });
 
-    // Trigger the upload-mod route on the server
+    // Handle the form submission
+    submitButton.addEventListener("click", () => {
+        const modName = modNameInput.value.trim();
+        const modGitHub = modGitHubInput.value.trim();
+
+        if (modName && modGitHub) {
+            triggerModUpload(modName, modGitHub);
+        } else {
+            alert("Please fill in all fields.");
+        }
+    });
+
+    // Function to trigger mod upload
     async function triggerModUpload(modName, modGitHub) {
         const url = "http://localhost:5000/upload-mod"; // Your server URL
 
@@ -42,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok) {
                 alert("Mod uploaded successfully! It may take a moment to appear.");
                 loadMods(); // Refresh the mod list
+                modal.classList.remove("show"); // Hide modal after submission
             } else {
                 const errorText = await response.text();
                 alert("Error: Could not upload mod.");
@@ -51,18 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error uploading mod:", error);
         }
     }
-
-    // Handle submit button click
-    submitButton.addEventListener("click", () => {
-        const modName = modNameInput.value.trim();
-        const modGitHub = modGitHubInput.value.trim();
-
-        if (modName && modGitHub) {
-            triggerModUpload(modName, modGitHub); // Trigger mod upload
-        } else {
-            alert("Please fill in all fields.");
-        }
-    });
 
     // Load mods from the server and display them
     function loadMods() {
