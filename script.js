@@ -47,9 +47,7 @@ async function loadMods() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        // Since we are returning TEXT, parse it as JSON manually:
-        const textData = await response.text();
-        const mods = JSON.parse(textData);
+        const mods = await response.json();
         console.log("Mods loaded:", mods);
 
         if (!Array.isArray(mods)) {
@@ -74,7 +72,7 @@ async function loadMods() {
     }
 }
 
-// Function to handle mod upload
+// Function to upload a new mod
 async function uploadMod() {
     const modName = document.getElementById("modName").value.trim();
     const modGitHub = document.getElementById("modGitHub").value.trim();
@@ -86,28 +84,30 @@ async function uploadMod() {
 
     const formData = {
         mod_name: modName,
-        mod_link: modGitHub,
+        mod_link: modGitHub
     };
-    
-    console.log("Uploading mod...", formData);
-    
+
     try {
+        console.log("Uploading mod...", formData);
         // Use your deployed Google Apps Script URL here:
         const response = await fetch("https://script.google.com/macros/s/AKfycbygU3KnE4Ix7pGupmrxqMlFSzpcEYSLxWGiWfdRu2BnpW4gY4IJZ7LjhPqoeBVIOmM0/exec", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(formData)
         });
-    
-        // Since the server returns plain text ("Success"), we use response.text()
+
         const result = await response.text();
         console.log("Upload response:", result);
-        
-        if (response.ok && result.trim() === "Success") {
+
+        if (response.ok) {
             alert("Mod uploaded successfully!");
-            loadMods();
+            loadMods(); // Reload mods list to include the new mod
+            // Optionally clear the input fields:
             document.getElementById("modName").value = "";
             document.getElementById("modGitHub").value = "";
+            // Optionally close the modal if using one:
             document.getElementById("uploadModal").classList.remove("show");
         } else {
             alert("Failed to upload mod.");
