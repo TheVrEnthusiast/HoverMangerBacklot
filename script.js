@@ -13,7 +13,7 @@ async function uploadMod() {
         mod_link: modGitHub,
     };
     
-    console.log("Form data being sent:", formData);  // Log the form data being sent
+    console.log("Form data being sent:", formData);
     
     try {
         const response = await fetch("https://script.google.com/macros/s/AKfycbzVvtUF5uvxeut6tHLHk6Y88OLZLLGokxXbVxoqhps1oe8MeT05wCg7VR21ts5c0vQAwA/exec", {
@@ -22,8 +22,8 @@ async function uploadMod() {
             body: JSON.stringify(formData)
         });
     
-        const responseData = await response.json(); // Ensure the response is valid JSON
-        console.log("Response from Google Apps Script:", responseData);  // Log response for debugging
+        const responseData = await response.json();
+        console.log("Response from Google Apps Script:", responseData); 
         
         if (response.ok) {
             alert("Mod uploaded successfully!");
@@ -42,7 +42,6 @@ async function uploadMod() {
 async function loadMods() {
     try {
         console.log("Fetching mod data...");
-        // Use your deployed Google Apps Script URL here:
         const response = await fetch("https://script.google.com/macros/s/AKfycbygU3KnE4Ix7pGupmrxqMlFSzpcEYSLxWGiWfdRu2BnpW4gY4IJZ7LjhPqoeBVIOmM0/exec");
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -56,8 +55,7 @@ async function loadMods() {
         }
 
         const modList = document.getElementById("modList");
-        modList.innerHTML = ""; // Clear current list
-
+        modList.innerHTML = "";
         mods.forEach(mod => {
             const modItem = document.createElement("div");
             modItem.classList.add("mod-item");
@@ -89,7 +87,6 @@ async function uploadMod() {
 
     try {
         console.log("Uploading mod...", formData);
-        // Use your deployed Google Apps Script URL here:
         const response = await fetch("https://script.google.com/macros/s/AKfycbygU3KnE4Ix7pGupmrxqMlFSzpcEYSLxWGiWfdRu2BnpW4gY4IJZ7LjhPqoeBVIOmM0/exec", {
             method: "POST",
             headers: {
@@ -103,8 +100,7 @@ async function uploadMod() {
 
         if (response.ok) {
             alert("Mod uploaded successfully!");
-            loadMods(); // Reload mods list to include the new mod
-            // Optionally clear the input fields:
+            loadMods(); 
             document.getElementById("modName").value = "";
             document.getElementById("modGitHub").value = "";
             // Optionally close the modal if using one:
@@ -117,7 +113,6 @@ async function uploadMod() {
     }
 }
 
-// Modal handling: Show and hide the upload modal
 document.getElementById("uploadModButton").addEventListener("click", () => {
     document.getElementById("uploadModal").classList.add("show");
 });
@@ -125,8 +120,6 @@ document.querySelector(".close").addEventListener("click", () => {
     document.getElementById("uploadModal").classList.remove("show");
 });
 
-// Bind the upload button click to the uploadMod function
 document.getElementById("submitMod").addEventListener("click", uploadMod);
 
-// Load mods when the page loads
 window.onload = loadMods;
